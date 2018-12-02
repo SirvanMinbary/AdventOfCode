@@ -1,5 +1,6 @@
 using AdventOfCode.Day2;
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -56,6 +57,40 @@ namespace Tests
             Assert.AreEqual(expected, actual);
         }
 
+        [Test]
+        public void BoxScan_FindCommonLetters()
+        {
+            var scan = new BoxScan();
+            var ids = GetSimiliarExampleData();
+
+            var actual = scan.FindCommonLetters(ids);
+            var expected = new Tuple<string, string>("fghij", "fguij");
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void BoxScan_RemoveDifferentLetters()
+        {
+            var scan = new BoxScan();
+
+            var actual = scan.RemoveDifferentLetters("fghij", "fguij");
+            var expected = "fgij";
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void BoxScan_RemoveDifferentLetters_ActualAnswer()
+        {
+            var scan = new BoxScan();
+
+            var actual = scan.RemoveDifferentLetters("qcslyvphgkrmrdawljuefotxbh", "qcslyvphgkrmddawljuefotxbh");
+            var expected = "qcslyvphgkrmdawljuefotxbh";
+
+            Assert.AreEqual(expected, actual);
+        }
+
         private List<string> GetExampleData()
         {
             return new List<string>
@@ -67,6 +102,20 @@ namespace Tests
                 "aabcdd",
                 "abcdee",
                 "ababab"
+            };
+        }
+
+        private List<string> GetSimiliarExampleData()
+        {
+            return new List<string>
+            {
+            "abcde",
+            "fghij",
+            "klmno",
+            "pqrst",
+            "fguij",
+            "axcye",
+            "wvxyz"
             };
         }
     }

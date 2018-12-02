@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 
 namespace AdventOfCode.Day2
 {
@@ -12,6 +11,8 @@ namespace AdventOfCode.Day2
         static void Main(string[] args)
         {
             PartOne();
+
+            PartTwo();
 
             Console.ReadLine();
         }
@@ -35,13 +36,30 @@ namespace AdventOfCode.Day2
             var checksum = scan.GenerateBoxCheckSum(first, second);
             Console.WriteLine($"Checksum is {checksum}");
         }
+
+        static void PartTwo()
+        {
+            Console.WriteLine("--- Part 2 ---");
+
+            var scan = new BoxScan();
+            Console.WriteLine("Scanning box IDs...");
+            var ids = scan.GetBoxIds();
+
+            Console.WriteLine("Finding similiar IDs...");
+            var data = scan.FindCommonLetters(ids);
+
+            Console.WriteLine("Finding common letters...");
+            var commonLetters = scan.RemoveDifferentLetters(data.Item1, data.Item2);
+
+            Console.WriteLine($"The common letters are: {commonLetters}");
+        }
     }
 
     public class BoxScan
     {
         public List<string> GetBoxIds()
         {
-            var file = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("AdventOfCode.Day2.Boxes.txt");
+            var file = Assembly.GetExecutingAssembly().GetManifestResourceStream("AdventOfCode.Day2.Boxes.txt");
 
             var result = new List<string>();
             using (var stream = new StreamReader(file))
@@ -78,6 +96,88 @@ namespace AdventOfCode.Day2
         public int GenerateBoxCheckSum(int first, int second)
         {
             return first * second;
+        }
+
+        public Tuple<string, string> FindCommonLetters(List<string> ids)
+        {
+            foreach (var item in ids)
+            {
+                foreach (var item2 in ids)
+                {
+                    if (item == item2)
+                    {
+                        continue;
+                    }
+
+                    var dist = ComputeLevenshteinDistance(item, item2);
+                    if (dist == 1)
+                    {
+                        return new Tuple<string, string>(item, item2);
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public string RemoveDifferentLetters(string first, string second)
+        {
+            var result = "";
+
+            for (int i = 0; i < first.Length; i++)
+            {
+                if (first[i] == second[i])
+                {
+                    result += first[i];
+                }
+            }
+
+            return result;
+        }
+
+        public static int ComputeLevenshteinDistance(string s, string t)
+        {
+            int n = s.Length;
+            int m = t.Length;
+            int[,] d = new int[n + 1, m + 1];
+
+            // Step 1
+            if (n == 0)
+            {
+                return m;
+            }
+
+            if (m == 0)
+            {
+                return n;
+            }
+
+            // Step 2
+            for (int i = 0; i <= n; d[i, 0] = i++)
+            {
+            }
+
+            for (int j = 0; j <= m; d[0, j] = j++)
+            {
+            }
+
+            // Step 3
+            for (int i = 1; i <= n; i++)
+            {
+                //Step 4
+                for (int j = 1; j <= m; j++)
+                {
+                    // Step 5
+                    int cost = (t[j - 1] == s[i - 1]) ? 0 : 1;
+
+                    // Step 6
+                    d[i, j] = Math.Min(
+                        Math.Min(d[i - 1, j] + 1, d[i, j - 1] + 1),
+                        d[i - 1, j - 1] + cost);
+                }
+            }
+            // Step 7
+            return d[n, m];
         }
     }
 }
