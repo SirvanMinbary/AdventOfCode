@@ -8,31 +8,69 @@ namespace AdventOfCode.DayOne
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("--- Day 1 ---");
+            Console.WriteLine("Part one");
+
+            var device = new FrequencyDevice();
+            device.Calibrate();
+
+            Console.WriteLine("Part two");
+
+            device = new FrequencyDevice();
+            device.FindDuplicateFrequency();
+
+            Console.ReadLine();
+        }
+    }
+
+    class FrequencyDevice
+    {
+        public int CurrentFrequency { get; set; }
+
+        public void Calibrate()
+        {
             var device = new FrequencyDevice();
             Console.WriteLine("Loading new frequency...");
             var frequencies = device.GetFrequencyChanges();
             foreach (var freq in frequencies)
             {
-                Console.Write($"Current frequency {device.CurrentFrequency}, change of {freq};");
                 device.ChangeFrequency(freq);
-                Console.Write($" result frequency {device.CurrentFrequency}. \n");
             }
 
             Console.WriteLine($"Final frequency: {device.CurrentFrequency}");
-            Console.ReadLine();
         }
-    }
 
-    public class FrequencyDevice
-    {
-        public int CurrentFrequency { get; set; }
-
-        public void ChangeFrequency(int change)
+        public void FindDuplicateFrequency()
         {
-            CurrentFrequency += change;
+            Console.WriteLine("Loading new frequencies...");
+            var frequencies = GetFrequencyChanges();
+            var previousFrequencies = new List<int>();
+            int loops = 0;
+            bool isDuplicateFound = false;
+
+            Console.WriteLine("Searching for duplicate frequencies...");
+            while (isDuplicateFound == false)
+            {
+                Console.WriteLine($"Starting search on loop {loops}");
+                foreach (var freq in frequencies)
+                {
+                    ChangeFrequency(freq);
+
+                    if (previousFrequencies.Contains(CurrentFrequency))
+                    {
+                        Console.WriteLine($"Duplicate frequency found: {CurrentFrequency} after {loops} loops");
+                        isDuplicateFound = true;
+                        break;
+                    }
+
+                    previousFrequencies.Add(CurrentFrequency);
+                }
+
+                loops++;
+            }
         }
 
-        public List<int> GetFrequencyChanges()
+        private List<int> GetFrequencyChanges()
         {
             var file = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("AdventOfCode.Day1.FrequencyChanges.txt");
 
@@ -51,6 +89,13 @@ namespace AdventOfCode.DayOne
             }
 
             return result;
+        }
+
+        private void ChangeFrequency(int change)
+        {
+            Console.Write($"Current frequency {CurrentFrequency}, change of {change};");
+            CurrentFrequency += change;
+            Console.Write($" result frequency {CurrentFrequency}. \n");
         }
     }
 }
