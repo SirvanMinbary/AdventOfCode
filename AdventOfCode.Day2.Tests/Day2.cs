@@ -7,7 +7,7 @@ using System.Linq;
 namespace Tests
 {
     [TestFixture]
-    public class Tests
+    public class Day2
     {
 
         [Test]
