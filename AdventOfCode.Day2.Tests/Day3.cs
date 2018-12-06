@@ -26,19 +26,6 @@ namespace AdventOfCode.Tests
             Assert.IsTrue(actual.Width == expected.Width);
         }
 
-        [Test]
-        public void CalculateOverlappingArea()
-        {
-            var claims = GetClaims();
-            var helper = new FabricHelper();
-
-            var actual = helper.CalculateOverlappingArea(claims);
-            var expected = 4;
-
-            Assert.AreEqual(expected, actual);
-
-        }
-
         private List<string> GetClaimsRawData()
         {
             return new List<string>

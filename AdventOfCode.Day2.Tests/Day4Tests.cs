@@ -59,7 +59,12 @@ namespace AdventOfCode.Tests
             var actual = day4.ComputeGuardsSleepyTime(data);
             var expected = new List<GuardSleepyTime>
             {
-                new GuardSleepyTime{GuardId=1, MinuteAmount= new Dictionary<int, int>()}
+                new GuardSleepyTime
+                {
+                    GuardId =1,
+                    MinuteAmount = new Dictionary<int, int>(),
+                    TotalMinutes =5
+                }
             };
 
             var expectedDict = expected.Single().MinuteAmount;
@@ -71,6 +76,7 @@ namespace AdventOfCode.Tests
             expectedDict.Add(10, 1);
 
             Assert.IsTrue(actual.Single().GuardId == expected.Single().GuardId);
+            Assert.IsTrue(actual.Single().TotalMinutes == expected.Single().TotalMinutes);
             CollectionAssert.AreEqual(expectedDict, actual.Single().MinuteAmount);
         }
 
@@ -83,6 +89,19 @@ namespace AdventOfCode.Tests
 
             var actual = day4.FindGuardMostAsleepAtMinute(guardsMinutes);
             var expected = 10 * 24;
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void FindGuardMostFrequentlyAsleepAtSameMinute()
+        {
+            var day4 = new Day4.Day4();
+            var data = day4.MapDataToShifts(GetExampleData());
+            var guardsMinutes = day4.ComputeGuardsSleepyTime(data);
+
+            var actual = day4.FindMostFrequentlyAsleepAtSameMinute(guardsMinutes);
+            var expected = 99 * 45;
 
             Assert.AreEqual(expected, actual);
         }

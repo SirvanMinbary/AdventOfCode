@@ -12,19 +12,22 @@ namespace AdventOfCode.Day4
     {
         static void Main(string[] args)
         {
-            PartOne();
+            var program = new Day4();
+            var data = Utility.GetDataFromResource("GuardShifts.txt");
+            var shifts = program.MapDataToShifts(data);
+            var timesAsleep = program.ComputeGuardsSleepyTime(shifts);
+            var partOneResult = program.FindGuardMostAsleepAtMinute(timesAsleep);
+            Console.WriteLine($"Part one: {partOneResult}");
+
+            var partTwoResult = program.FindMostFrequentlyAsleepAtSameMinute(timesAsleep);
+            Console.WriteLine($"Part two: {partTwoResult}");
 
             Console.ReadKey();
         }
 
         private static void PartOne()
         {
-            var program = new Day4();
-            var data = Utility.GetDataFromResource("GuardShifts.txt");
-            var shifts = program.MapDataToShifts(data);
-            var timesAsleep = program.ComputeGuardsSleepyTime(shifts);
-            var guardMinuteValue = program.FindGuardMostAsleepAtMinute(timesAsleep);
-            Console.WriteLine(guardMinuteValue);
+
         }
     }
 
@@ -65,20 +68,13 @@ namespace AdventOfCode.Day4
                 switch (shift.Action)
                 {
                     case Action.BeginShift:
-                        if (shift.GuardId.HasValue)
+                        currentSleepTime = result.SingleOrDefault(r => r.GuardId == shift.GuardId.Value);
+
+                        if (currentSleepTime == null)
                         {
+                            result.Add(new GuardSleepyTime { GuardId = shift.GuardId.Value });
+
                             currentSleepTime = result.SingleOrDefault(r => r.GuardId == shift.GuardId.Value);
-
-                            if (currentSleepTime == null)
-                            {
-                                result.Add(new GuardSleepyTime { GuardId = shift.GuardId.Value });
-
-                                currentSleepTime = result.SingleOrDefault(r => r.GuardId == shift.GuardId.Value);
-                            }
-                        }
-                        else
-                        {
-                            throw new Exception("Could not find Guard ID on shift");
                         }
                         break;
                     case Action.FallsAsleep:
@@ -118,6 +114,26 @@ namespace AdventOfCode.Day4
             var mostCommonMinuteAsleep = guardWithMostMinutesAsleep.MinuteAmount.OrderByDescending(x => x.Value).First().Key;
 
             return guardWithMostMinutesAsleep.GuardId * mostCommonMinuteAsleep;
+        }
+
+        public int FindMostFrequentlyAsleepAtSameMinute(List<GuardSleepyTime> sleepyTimes)
+        {
+            var guardId = 0;
+            var timesAsleepOnMinute = 0;
+            var minute = 0;
+            foreach (var item in sleepyTimes)
+            {
+                var mostFrequentlyMinuteAsleep = item.MinuteAmount.OrderByDescending(x => x.Value).FirstOrDefault();
+
+                if (mostFrequentlyMinuteAsleep.Value > timesAsleepOnMinute)
+                {
+                    minute = mostFrequentlyMinuteAsleep.Key;
+                    timesAsleepOnMinute = mostFrequentlyMinuteAsleep.Value;
+                    guardId = item.GuardId;
+                }
+            }
+
+            return guardId * minute;
         }
 
         private int FindGuardId(string s)
